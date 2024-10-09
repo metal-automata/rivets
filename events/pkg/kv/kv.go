@@ -7,7 +7,7 @@ import (
 
 	"github.com/nats-io/nats.go"
 
-	"github.com/metal-toolbox/rivets/events"
+	"github.com/metal-automata/rivets/events"
 )
 
 // DefaultKVConfig returns a configuration with "mostly sane" defaults. Override

@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"sort"
 
-	ss "github.com/metal-toolbox/fleetdb/pkg/api/v1"
-	rt "github.com/metal-toolbox/rivets/types"
+	ss "github.com/metal-automata/fleetdb/pkg/api/v1"
+	rt "github.com/metal-automata/rivets/types"
 	"github.com/pkg/errors"
 )
 

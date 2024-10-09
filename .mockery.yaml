@@ -1,7 +1,7 @@
 testonly: False
 with-expecter: True
 packages:
-  github.com/metal-toolbox/rivets/events:
+  github.com/metal-automata/rivets/events:
     config:
       dir: events/
       fileName: "mock_{{.InterfaceName | firstLower}}.go"

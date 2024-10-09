@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/metal-toolbox/rivets/events"
+	"github.com/metal-automata/rivets/events"
 
 	"golang.org/x/exp/slices"
 )

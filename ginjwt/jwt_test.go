@@ -16,8 +16,8 @@ import (
 	"gopkg.in/go-jose/go-jose.v2"
 	"gopkg.in/go-jose/go-jose.v2/jwt"
 
-	"github.com/metal-toolbox/rivets/ginauth"
-	"github.com/metal-toolbox/rivets/ginjwt"
+	"github.com/metal-automata/rivets/ginauth"
+	"github.com/metal-automata/rivets/ginjwt"
 )
 
 func TestMiddlewareValidatesTokensWithScopes(t *testing.T) {

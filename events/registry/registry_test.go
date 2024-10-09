@@ -7,8 +7,8 @@ import (
 	"github.com/nats-io/nats.go"
 	"github.com/stretchr/testify/require"
 
-	"github.com/metal-toolbox/rivets/events"
-	kvTest "github.com/metal-toolbox/rivets/events/internal/test"
+	"github.com/metal-automata/rivets/events"
+	kvTest "github.com/metal-automata/rivets/events/internal/test"
 )
 
 func TestAppLifecycle(t *testing.T) {

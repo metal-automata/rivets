@@ -19,7 +19,7 @@ const (
 	// These two Kinds are added just to enable the Condition API, Orchestrator to differentiate
 	// between the two Kinds when applying an Update.
 	//
-	// https://github.com/metal-toolbox/conditionorc/blob/92f9b1619074b7c4ef4b35f39c3beab3c254966f/internal/store/nats.go#L263
+	// https://github.com/metal-automata/conditionorc/blob/92f9b1619074b7c4ef4b35f39c3beab3c254966f/internal/store/nats.go#L263
 	//
 	BrokerAcquireServer Kind = "broker.acquireServer"
 	BrokerReleaseServer Kind = "broker.releaseServer"

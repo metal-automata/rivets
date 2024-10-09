@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	ss "github.com/metal-toolbox/fleetdb/pkg/api/v1"
+	ss "github.com/metal-automata/fleetdb/pkg/api/v1"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
