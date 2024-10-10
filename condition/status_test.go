@@ -9,9 +9,9 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/metal-toolbox/rivets/events"
-	"github.com/metal-toolbox/rivets/events/pkg/kv"
-	"github.com/metal-toolbox/rivets/events/registry"
+	"github.com/metal-automata/rivets/events"
+	"github.com/metal-automata/rivets/events/pkg/kv"
+	"github.com/metal-automata/rivets/events/registry"
 	"github.com/nats-io/nats-server/v2/server"
 	srvtest "github.com/nats-io/nats-server/v2/test"
 	"github.com/nats-io/nats.go"

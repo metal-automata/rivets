@@ -20,9 +20,7 @@ jobs:
         version: v1.55.2
 
     - name: Test
-      run: go test ./...
-      with:
-        args: -tags testtools
+      run: go test ./... -tags testtools
 
   build:
     runs-on: ubuntu-latest

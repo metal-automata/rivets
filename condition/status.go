@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/metal-toolbox/rivets/events/registry"
+	"github.com/metal-automata/rivets/events/registry"
 	"github.com/nats-io/nats.go"
 	"github.com/pkg/errors"
 )

@@ -11,7 +11,7 @@ import (
 	"github.com/pkg/errors"
 
 	bmclibcomm "github.com/bmc-toolbox/common"
-	fleetdbapi "github.com/metal-toolbox/fleetdb/pkg/api/v1"
+	fleetdbapi "github.com/metal-automata/fleetdb/pkg/api/v1"
 )
 
 var (

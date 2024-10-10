@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	rtypes "github.com/metal-toolbox/rivets/types"
+	rtypes "github.com/metal-automata/rivets/types"
 	"github.com/pkg/errors"
 )
 

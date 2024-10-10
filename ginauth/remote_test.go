@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/metal-toolbox/rivets/ginauth"
+	"github.com/metal-automata/rivets/ginauth"
 )
 
 func getNewTestRemoteAuthServer(resp *ginauth.AuthResponseV1, forcedSleep time.Duration) string {
