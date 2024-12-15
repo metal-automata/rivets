@@ -107,12 +107,12 @@ func CheckConditionInProgress(conditionID, facilityCode, kvBucket string, js nat
 
 	lookupKey := fmt.Sprintf("%s.%s", facilityCode, conditionID)
 	entry, err := handle.Get(lookupKey)
-	switch err {
-	case nats.ErrKeyNotFound:
+	switch {
+	case errors.Is(err, nats.ErrKeyNotFound):
 		// This should be by far the most common path through this code.
 		return NotStarted, nil
 
-	case nil:
+	case err == nil:
 		break // we'll handle this outside the switch
 
 	default:
@@ -138,8 +138,8 @@ func CheckConditionInProgress(conditionID, facilityCode, kvBucket string, js nat
 	}
 
 	_, err = registry.LastContact(controllerID)
-	switch err {
-	case nats.ErrKeyNotFound:
+	switch {
+	case errors.Is(err, nats.ErrKeyNotFound):
 		// the data for this worker aged-out, it's no longer active
 		// XXX: the most conservative thing to do here is to return
 		// indeterminate but most times this will indicate that the
@@ -156,7 +156,7 @@ func CheckConditionInProgress(conditionID, facilityCode, kvBucket string, js nat
 
 		return Orphaned, nil
 
-	case nil:
+	case err == nil:
 		return InProgress, nil
 
 	default:

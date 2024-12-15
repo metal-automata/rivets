@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	rtypes "github.com/metal-automata/rivets/types"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
 )
@@ -31,7 +30,7 @@ func TestNewTaskFromCondition(t *testing.T) {
 	assert.Equal(t, cond.ID, task.ID, "expected ID to be %s, but got %s", cond.ID, task.ID)
 	assert.Equal(t, cond.Kind, task.Kind, "expected Kind to be %s, but got %s", cond.Kind, task.Kind)
 	assert.Equal(t, Pending, task.State, "expected State to be %s, but got %s", Pending, task.State)
-	assert.Equal(t, &rtypes.Server{ID: cond.Target.String()}, task.Server, "expected Server to be %v, but got %v", &rtypes.Server{ID: cond.Target.String()}, task.Server)
+	assert.Equal(t, &Server{UUID: cond.Target}, task.Server, "expected Server to be %v, but got %v", &Server{UUID: cond.Target}, task.Server)
 	assert.Equal(t, cond.Parameters, task.Parameters, "expected Parameters to be %v, but got %v", cond.Parameters, task.Parameters)
 	assert.Equal(t, json.RawMessage(`{"empty": true}`), task.Data, "expected Data to be %v, but got %v", json.RawMessage(`{"empty": true}`), task.Data)
 	assert.Equal(t, cond.Fault, task.Fault, "expected Fault to be %v, but got %v", cond.Fault, task.Fault)
@@ -212,7 +211,7 @@ func TestTaskFromMessage(t *testing.T) {
 				"parameters": {"param": "value"},
 				"fault": {"panic": true},
 				"facility_code": "123",
-				"server": {"ID": "ed483ef9-098e-4892-bfcf-1696c44fd7a9"},
+				"server": {"UUID": "ed483ef9-098e-4892-bfcf-1696c44fd7a9"},
 				"traceID": "123",
 				"spanID": "123"}`),
 			expectedTask: &Task[any, any]{
@@ -230,7 +229,7 @@ func TestTaskFromMessage(t *testing.T) {
 				FacilityCode: "123",
 				WorkerID:     "worker-123",
 				Fault:        &Fault{Panic: true},
-				Server:       &rtypes.Server{ID: "ed483ef9-098e-4892-bfcf-1696c44fd7a9"},
+				Server:       &Server{UUID: uuid.MustParse("ed483ef9-098e-4892-bfcf-1696c44fd7a9")},
 				TraceID:      "123",
 				SpanID:       "123",
 			},

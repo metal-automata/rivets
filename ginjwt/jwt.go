@@ -171,7 +171,7 @@ func (m *Middleware) VerifyToken(c *gin.Context) (ginauth.ClaimMetadata, error) 
 	cl := jwt.Claims{}
 	sc := map[string]interface{}{}
 
-	if err := tok.Claims(key, &cl, &sc); err != nil {
+	if errClaims := tok.Claims(key, &cl, &sc); errClaims != nil {
 		return ginauth.ClaimMetadata{}, ginauth.NewAuthenticationError("unable to validate auth token")
 	}
 

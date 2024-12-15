@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	rtypes "github.com/metal-automata/rivets/types"
 	"github.com/pkg/errors"
 )
 
@@ -56,7 +55,7 @@ type Task[P, D any] struct {
 	FacilityCode string `json:"facility_code"`
 
 	// Server holds attributes about target server this task is for.
-	Server *rtypes.Server `json:"server,omitempty"`
+	Server *Server `json:"server,omitempty"`
 
 	// WorkerID is the identifier for the worker executing this task.
 	WorkerID string `json:"worker_id,omitempty"`
@@ -173,7 +172,7 @@ func NewTaskFromCondition(cond *Condition) *Task[any, any] {
 		ID:            cond.ID,
 		Kind:          cond.Kind,
 		State:         Pending,
-		Server:        &rtypes.Server{ID: cond.Target.String()},
+		Server:        &Server{UUID: cond.Target},
 		Parameters:    cond.Parameters,
 		Data:          json.RawMessage(`{"empty": true}`), // placeholder value
 		Fault:         cond.Fault,

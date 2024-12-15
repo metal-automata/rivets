@@ -65,14 +65,14 @@ func (rm *RemoteMiddleware) VerifyTokenWithScopes(c *gin.Context, scopes []strin
 
 	reqbody, merr := json.Marshal(areq)
 	if merr != nil {
-		return ClaimMetadata{}, fmt.Errorf("%w: %s", ErrMiddlewareRemote, merr)
+		return ClaimMetadata{}, fmt.Errorf("%w: %w", ErrMiddlewareRemote, merr)
 	}
 
 	// We forward the original request method that was done to the target service.
 	// That's part of what we're authorizing.
 	req, reqerr := http.NewRequestWithContext(c.Request.Context(), origRequest.Method, rm.url, bytes.NewBuffer(reqbody))
 	if reqerr != nil {
-		return ClaimMetadata{}, fmt.Errorf("%w: %s", ErrMiddlewareRemote, reqerr)
+		return ClaimMetadata{}, fmt.Errorf("%w: %w", ErrMiddlewareRemote, reqerr)
 	}
 
 	req.Header.Add("Accept", `application/json`)
@@ -82,14 +82,14 @@ func (rm *RemoteMiddleware) VerifyTokenWithScopes(c *gin.Context, scopes []strin
 
 	resp, resperr := cli.Do(req)
 	if resperr != nil {
-		return ClaimMetadata{}, fmt.Errorf("%w: %s", ErrMiddlewareRemote, resperr)
+		return ClaimMetadata{}, fmt.Errorf("%w: %w", ErrMiddlewareRemote, resperr)
 	}
 
 	defer resp.Body.Close()
 
 	body, readerr := io.ReadAll(resp.Body)
 	if readerr != nil {
-		return ClaimMetadata{}, fmt.Errorf("%w: %s", ErrMiddlewareRemote, readerr)
+		return ClaimMetadata{}, fmt.Errorf("%w: %w", ErrMiddlewareRemote, readerr)
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusForbidden && resp.StatusCode != http.StatusUnauthorized {
