@@ -7,12 +7,19 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/metal-automata/rivets/events"
-
 	"golang.org/x/exp/slices"
+
+	fleetdbapi "github.com/metal-automata/fleetdb/pkg/api/v1"
 )
 
 // Kind holds the value for the Condition Kind field.
 type Kind string
+
+type Server = fleetdbapi.Server
+type Component = fleetdbapi.ServerComponent
+type InstalledFirmware = fleetdbapi.InstalledFirmware
+type ComponentSlugMap = fleetdbapi.ComponentSlugMap
+type BMC = fleetdbapi.ServerBMC
 
 const (
 	ServerResourceType    string = "servers"

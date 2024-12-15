@@ -60,3 +60,20 @@ func MustInventoryJSON(assetID uuid.UUID, method InventoryMethod, collectFirmwar
 func MustDefaultInventoryJSON(assetID uuid.UUID) []byte {
 	return MustInventoryJSON(assetID, OutofbandInventory, true, true)
 }
+
+func (p *InventoryTaskParameters) MapStringInterfaceToStruct(m map[string]interface{}) error {
+	jsonData, err := json.Marshal(m)
+	if err != nil {
+		return err
+	}
+
+	return json.Unmarshal(jsonData, p)
+}
+
+func (p *InventoryTaskParameters) Unmarshal(r json.RawMessage) error {
+	return json.Unmarshal(r, p)
+}
+
+func (p *InventoryTaskParameters) Marshal() (json.RawMessage, error) {
+	return json.Marshal(p)
+}
