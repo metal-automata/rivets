@@ -211,7 +211,7 @@ func TestTaskFromMessage(t *testing.T) {
 				"parameters": {"param": "value"},
 				"fault": {"panic": true},
 				"facility_code": "123",
-				"server": {"ID": "ed483ef9-098e-4892-bfcf-1696c44fd7a9"},
+				"server": {"UUID": "ed483ef9-098e-4892-bfcf-1696c44fd7a9"},
 				"traceID": "123",
 				"spanID": "123"}`),
 			expectedTask: &Task[any, any]{
