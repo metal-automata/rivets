@@ -5,6 +5,7 @@ import (
 	"context"
 	"log"
 	"reflect"
+	"slices"
 	"time"
 
 	"github.com/hashicorp/go-multierror"
@@ -51,7 +52,7 @@ type NatsJetstream struct {
 	jsctx         nats.JetStreamContext
 	conn          *nats.Conn
 	parameters    *NatsOptions
-	subscriptions []*nats.Subscription
+	subscriptions map[string]*nats.Subscription
 	subscriberCh  MsgCh
 }
 
@@ -130,6 +131,9 @@ func (n *NatsJetstream) Open() error {
 
 	// setup the channel for subscribers to read messages from.
 	n.subscriberCh = make(MsgCh)
+
+	// setup map of subject to subscriptions
+	n.subscriptions = make(map[string]*nats.Subscription)
 
 	// setup Jetstream and consumer
 	return n.setup()
@@ -213,6 +217,10 @@ func (n *NatsJetstream) addConsumer() error {
 		return errors.Wrap(ErrNatsJetstreamAddConsumer, "Jetstream context is not setup")
 	}
 
+	if n.parameters.Consumer == nil {
+		return nil
+	}
+
 	// https://pkg.go.dev/github.com/nats-io/nats.go#ConsumerConfig
 	cfg := &nats.ConsumerConfig{
 		Durable:       n.parameters.Consumer.Name,
@@ -269,9 +277,15 @@ func (n *NatsJetstream) consumerConfigIsEqual(consumerInfo *nats.ConsumerInfo) b
 		return false
 	case consumerInfo.Config.FilterSubject != n.parameters.Consumer.FilterSubject:
 		return false
-	default:
-		return true
+	case n.parameters.Consumer.Pull:
+		for _, subj := range n.parameters.Consumer.SubscribeSubjects {
+			if !slices.Contains(consumerInfo.Config.FilterSubjects, subj) {
+				return false
+			}
+		}
 	}
+
+	return true
 }
 
 // Publish publishes an event onto the NATS Jetstream.
@@ -334,6 +348,10 @@ func (n *NatsJetstream) Subscribe(ctx context.Context) (MsgCh, error) {
 		}
 	}
 
+	if n.subscriptions == nil {
+		n.subscriptions = make(map[string]*nats.Subscription)
+	}
+
 	// regular Async subscription
 	for _, subject := range n.parameters.SubscribeSubjects {
 		subscription, err := n.jsctx.Subscribe(subject, n.subscriptionCallback, nats.Durable(n.parameters.AppName))
@@ -341,7 +359,7 @@ func (n *NatsJetstream) Subscribe(ctx context.Context) (MsgCh, error) {
 			return nil, errors.Wrap(ErrSubscription, err.Error()+": "+subject)
 		}
 
-		n.subscriptions = append(n.subscriptions, subscription)
+		n.subscriptions[subject] = subscription
 	}
 
 	return n.subscriberCh, nil
