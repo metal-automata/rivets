@@ -39,12 +39,16 @@ var (
 
 	// ErrSubscription is returned when an error in the consumer subscription occurs.
 	ErrSubscription = errors.New("error subscribing to stream")
+
+	// ErrrNoSubscriptionMatch is returned when no existing subscription matched the expected.
+	ErrNoSubscriptionMatch = errors.New("error in subscription match")
 )
 
 const (
 	consumerMaxDeliver    = 5
 	consumerAckPolicy     = nats.AckExplicitPolicy
 	conditionJetstreamTTL = 3 * time.Hour
+	defaultPullMsgTimeout = 5 * time.Second
 )
 
 // NatsJetstream wraps the NATs JetStream connector to implement the Stream interface.
@@ -230,7 +234,17 @@ func (n *NatsJetstream) addConsumer() error {
 		MaxAckPending: n.parameters.Consumer.MaxAckPending,
 		DeliverPolicy: nats.DeliverAllPolicy,
 		DeliverGroup:  n.parameters.Consumer.QueueGroup,
-		FilterSubject: n.parameters.Consumer.FilterSubject,
+	}
+
+	// If it s pull consumer, default to server side filtering of subjects
+	// which enables multiple filter subjects to be filtered on
+	//
+	// https://docs.nats.io/nats-concepts/jetstream/consumers#filtersubjects
+	// https://github.com/nats-io/nats-server/issues/2515
+	if n.parameters.Consumer.Pull {
+		cfg.FilterSubjects = n.parameters.SubscribeSubjects
+	} else {
+		cfg.FilterSubject = n.parameters.Consumer.FilterSubject
 	}
 
 	// add consumer if its not already present
@@ -371,53 +385,55 @@ func (n *NatsJetstream) subscribeAsPull(_ context.Context) error {
 		return errors.Wrap(ErrNatsJetstreamAddConsumer, "Jetstream context is not setup")
 	}
 
+	if n.subscriptions == nil {
+		n.subscriptions = make(map[string]*nats.Subscription)
+	}
+
 	for _, subject := range n.parameters.Consumer.SubscribeSubjects {
-		subscription, err := n.jsctx.PullSubscribe(subject, n.parameters.Consumer.Name,
-			nats.BindStream(n.parameters.Stream.Name))
+		subscription, err := n.jsctx.PullSubscribe(subject, n.parameters.Consumer.Name, nats.BindStream(n.parameters.Stream.Name))
 		if err != nil {
 			log.Printf("PullSubscribe with subject=%s, durable=%s, stream=%s => %v", subject, n.parameters.AppName,
 				n.parameters.Stream.Name, err)
 			return errors.Wrap(ErrSubscription, err.Error()+": "+subject)
 		}
 
-		n.subscriptions = append(n.subscriptions, subscription)
+		log.Printf("PullSubscribe with subject=%s, durable=%s, stream=%s", subject, n.parameters.AppName, n.parameters.Stream.Name)
+
+		n.subscriptions[subject] = subscription
 	}
 
 	return nil
 }
 
-// XXX: the ergonomics here are weird, because we're handling potentially multiple subscriptions
-// in a single call, and an error on any single retrieve just aborts the group operation.
-
-// PullMsg pulls up to the batch count of messages from each pull-based subscription to
-// subjects on the stream.
-func (n *NatsJetstream) PullMsg(_ context.Context, batch int) ([]Message, error) {
+// PullOneMsg retrieves a message from the stream based on the subject
+func (n *NatsJetstream) PullOneMsg(ctx context.Context, subject string) (Message, error) {
 	if n.jsctx == nil {
 		return nil, errors.Wrap(ErrNatsJetstreamAddConsumer, "Jetstream context is not setup")
 	}
 
-	var hasPullSubscription bool
-	var msgs []Message
-
-	for _, subscription := range n.subscriptions {
-		if subscription.Type() != nats.PullSubscription {
-			continue
-		}
-
-		hasPullSubscription = true
-
-		subMsgs, err := subscription.Fetch(batch)
-		if err != nil {
-			return nil, errors.Wrap(err, ErrNatsMsgPull.Error())
-		}
-		msgs = append(msgs, msgIfFromNats(subMsgs...)...)
+	subscription, exists := n.subscriptions[subject]
+	if !exists {
+		return nil, errors.Wrap(ErrNoSubscriptionMatch, "no pull subscription matched subject")
 	}
 
-	if !hasPullSubscription {
-		return nil, errors.Wrap(ErrNatsMsgPull, "no pull subscriptions to fetch from")
+	if subscription.Type() != nats.PullSubscription {
+		return nil, errors.Wrap(ErrNoSubscriptionMatch, "unexpected subscription type, expected pull")
 	}
 
-	return msgs, nil
+	msgs, err := subscription.Fetch(1, nats.Context(ctx))
+	if err != nil {
+		return nil, errors.Wrap(err, ErrNatsMsgPull.Error())
+	}
+
+	if len(msgs) == 0 {
+		return nil, errors.Wrap(ErrNatsMsgPull, "no message")
+	}
+
+	for _, msg := range msgs {
+		return &natsMsg{msg: msg}, nil
+	}
+
+	return nil, errors.Wrap(ErrNatsMsgPull, "no message")
 }
 
 func (n *NatsJetstream) subscriptionCallback(msg *nats.Msg) {

@@ -93,6 +93,9 @@ type NatsConsumerOptions struct {
 	//
 	// Although if the stream is a WorkQueue stream, then this must be set
 	// and should be unique between consumers on the stream.
+	//
+	// Note: For pull subscribers filtering on multiple subjects
+	// leave this field empty and set SubscribeSubjects below.
 	FilterSubject string `mapstructure:"filter_subject"`
 
 	// Subscribe to these subjects through this consumer.

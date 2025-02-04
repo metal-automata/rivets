@@ -49,8 +49,8 @@ type Stream interface {
 	// Subscribe subscribes to one or more subjects on the stream returning a message channel for subscribers to read from.
 	Subscribe(ctx context.Context) (MsgCh, error)
 
-	// PullMsg pulls upto batch count of messages from the stream through the pull based subscription.
-	PullMsg(ctx context.Context, batch int) ([]Message, error)
+	// PullOneMsg pulls one message with the given subject from the stream
+	PullOneMsg(ctx context.Context, subject string) (Message, error)
 
 	// Closes the connection to the stream, along with unsubscribing any subscriptions.
 	Close() error
