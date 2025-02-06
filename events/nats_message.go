@@ -61,11 +61,3 @@ func (nm *natsMsg) ExtractOtelTraceContext(ctx context.Context) context.Context 
 
 	return otel.GetTextMapPropagator().Extract(ctx, propagation.HeaderCarrier(nm.msg.Header))
 }
-
-func msgIfFromNats(natsMsgs ...*nats.Msg) []Message {
-	msgs := make([]Message, 0, len(natsMsgs))
-	for _, m := range natsMsgs {
-		msgs = append(msgs, &natsMsg{msg: m})
-	}
-	return msgs
-}

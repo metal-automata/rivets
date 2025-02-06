@@ -207,29 +207,29 @@ func (_c *MockStream_PublishOverwrite_Call) RunAndReturn(run func(context.Contex
 	return _c
 }
 
-// PullMsg provides a mock function with given fields: ctx, batch
-func (_m *MockStream) PullMsg(ctx context.Context, batch int) ([]Message, error) {
-	ret := _m.Called(ctx, batch)
+// PullOneMsg provides a mock function with given fields: ctx, subject
+func (_m *MockStream) PullOneMsg(ctx context.Context, subject string) (Message, error) {
+	ret := _m.Called(ctx, subject)
 
 	if len(ret) == 0 {
-		panic("no return value specified for PullMsg")
+		panic("no return value specified for PullOneMsg")
 	}
 
-	var r0 []Message
+	var r0 Message
 	var r1 error
-	if rf, ok := ret.Get(0).(func(context.Context, int) ([]Message, error)); ok {
-		return rf(ctx, batch)
+	if rf, ok := ret.Get(0).(func(context.Context, string) (Message, error)); ok {
+		return rf(ctx, subject)
 	}
-	if rf, ok := ret.Get(0).(func(context.Context, int) []Message); ok {
-		r0 = rf(ctx, batch)
+	if rf, ok := ret.Get(0).(func(context.Context, string) Message); ok {
+		r0 = rf(ctx, subject)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]Message)
+			r0 = ret.Get(0).(Message)
 		}
 	}
 
-	if rf, ok := ret.Get(1).(func(context.Context, int) error); ok {
-		r1 = rf(ctx, batch)
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, subject)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -237,31 +237,31 @@ func (_m *MockStream) PullMsg(ctx context.Context, batch int) ([]Message, error)
 	return r0, r1
 }
 
-// MockStream_PullMsg_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'PullMsg'
-type MockStream_PullMsg_Call struct {
+// MockStream_PullOneMsg_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'PullOneMsg'
+type MockStream_PullOneMsg_Call struct {
 	*mock.Call
 }
 
-// PullMsg is a helper method to define mock.On call
+// PullOneMsg is a helper method to define mock.On call
 //   - ctx context.Context
-//   - batch int
-func (_e *MockStream_Expecter) PullMsg(ctx interface{}, batch interface{}) *MockStream_PullMsg_Call {
-	return &MockStream_PullMsg_Call{Call: _e.mock.On("PullMsg", ctx, batch)}
+//   - subject string
+func (_e *MockStream_Expecter) PullOneMsg(ctx interface{}, subject interface{}) *MockStream_PullOneMsg_Call {
+	return &MockStream_PullOneMsg_Call{Call: _e.mock.On("PullOneMsg", ctx, subject)}
 }
 
-func (_c *MockStream_PullMsg_Call) Run(run func(ctx context.Context, batch int)) *MockStream_PullMsg_Call {
+func (_c *MockStream_PullOneMsg_Call) Run(run func(ctx context.Context, subject string)) *MockStream_PullOneMsg_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run(args[0].(context.Context), args[1].(int))
+		run(args[0].(context.Context), args[1].(string))
 	})
 	return _c
 }
 
-func (_c *MockStream_PullMsg_Call) Return(_a0 []Message, _a1 error) *MockStream_PullMsg_Call {
+func (_c *MockStream_PullOneMsg_Call) Return(_a0 Message, _a1 error) *MockStream_PullOneMsg_Call {
 	_c.Call.Return(_a0, _a1)
 	return _c
 }
 
-func (_c *MockStream_PullMsg_Call) RunAndReturn(run func(context.Context, int) ([]Message, error)) *MockStream_PullMsg_Call {
+func (_c *MockStream_PullOneMsg_Call) RunAndReturn(run func(context.Context, string) (Message, error)) *MockStream_PullOneMsg_Call {
 	_c.Call.Return(run)
 	return _c
 }
