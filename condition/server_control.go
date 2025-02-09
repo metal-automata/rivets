@@ -118,3 +118,12 @@ func NewServerControlTaskParameters(assetID uuid.UUID, action ServerControlActio
 		SetNextBootDeviceEFI:        efiBoot,
 	}
 }
+
+func (p *ServerControlTaskParameters) MapStringInterfaceToStruct(m map[string]interface{}) error {
+	jsonData, err := json.Marshal(m)
+	if err != nil {
+		return err
+	}
+
+	return json.Unmarshal(jsonData, p)
+}
